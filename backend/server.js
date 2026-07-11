@@ -5,7 +5,9 @@ import 'dotenv/config'
 import authRouter from './routes/authRouter.js'
 import bookingRouter from './routes/bookingRouter.js'
 import restaurantRouter from './routes/restaurantRouter.js'
+import cors from 'cors'
 const app = express();
+app.use(cors())
 app.use(express.json());
 app.use('/restaurants',restaurantRouter)
 app.use('/auth', authRouter)

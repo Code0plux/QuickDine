@@ -1,6 +1,7 @@
 import db from "../config/db.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import crypto from 'crypto'
 export const login = async (req,res)=>{
     try{
         const {email,password} = req.body;
@@ -55,7 +56,7 @@ export const register = async (req,res)=>{
     const[getId] = await db.query(
         'select id from user where email = ?',[email]
     );
-    const token = jwt.sign({id:getId[0] , role:role},process.env.JWT_SECRET,{expiresIn:process.env.EXPIRES_IN})
+    const token = jwt.sign({id:getId[0].id , role:role},process.env.JWT_SECRET,{expiresIn:process.env.EXPIRES_IN})
     res.status(201).json({
      message:'user Created',
      userId: result.insertId,
@@ -72,4 +73,39 @@ export const register = async (req,res)=>{
 }
 
 
-export default {login,register};
+export const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const [users] = await db.query(`select id from user where email = ?`, [email]);
+        if (users.length === 0) return res.status(400).json({ message: "Email does not exist" });
+
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiry = Date.now() + 15 * 60 * 1000; // 15 minutes
+
+        await db.query(`update user set reset_token = ?, reset_token_expiry = ? where email = ?`, [token, expiry, email]);
+
+        // In production, send this token via email instead
+        res.status(200).json({ message: "Reset token generated", reset_token: token });
+    } catch (err) {
+        return res.status(500).json({ message: "Error from forgot password", err });
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    try {
+        const { token, password } = req.body;
+        const [users] = await db.query(`select * from user where reset_token = ?`, [token]);
+
+        if (users.length === 0) return res.status(400).json({ message: "Invalid token" });
+        if (users[0].reset_token_expiry < Date.now()) return res.status(400).json({ message: "Token expired" });
+
+        const hash = await bcrypt.hash(password, 10);
+        await db.query(`update user set password_hash = ?, reset_token = NULL, reset_token_expiry = NULL where id = ?`, [hash, users[0].id]);
+
+        res.status(200).json({ message: "Password reset successful" });
+    } catch (err) {
+        return res.status(500).json({ message: "Error from reset password", err });
+    }
+}
+
+export default {login, register, forgotPassword, resetPassword};

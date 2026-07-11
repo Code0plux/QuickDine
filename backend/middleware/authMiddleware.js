@@ -9,6 +9,7 @@ export const authenticateUser=(req,res,next)=>{
             token,
             process.env.JWT_SECRET
         );
+        console.log(decode)
         req.userId = decode.id;
         next();
         }
