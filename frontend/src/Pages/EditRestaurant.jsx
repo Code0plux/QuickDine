@@ -3,8 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../api";
 import Navbar from "../components/Navbar";
 
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/do9yntyim/image/upload";
-const UPLOAD_PRESET = "quickdine";
+const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL;
+const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
 async function uploadImage(file) {
     const fd = new FormData();

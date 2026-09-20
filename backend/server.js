@@ -1,10 +1,10 @@
+import 'dotenv/config'
 import express from 'express';
 import db from './config/db.js';
-import userRouter from './routes/userRouter.js'
-import 'dotenv/config'
 import authRouter from './routes/authRouter.js'
 import bookingRouter from './routes/bookingRouter.js'
 import restaurantRouter from './routes/restaurantRouter.js'
+import userRouter from './routes/userRouter.js'
 import cors from 'cors'
 const app = express();
 app.use(cors())
@@ -14,4 +14,5 @@ app.use('/auth', authRouter)
 app.use('/user', userRouter)
 app.use('/bookings',bookingRouter)
 
-app.listen(3000, () => console.log('Server running on port 3000'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
