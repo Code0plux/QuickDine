@@ -71,7 +71,7 @@ function RestaurantBookings() {
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {grouped[slot].map((b, i) => {
-                                        const isBooked = b.booking_status === "Booked";
+                                        const isBooked = b.booking_status == "confirm";
                                         return (
                                             <div
                                                 key={b.table_id}
