@@ -16,7 +16,7 @@ function ResetPassword() {
         if (password !== confirm) return setError("Passwords do not match");
         setLoading(true);
         try {
-            await axios.post("http://localhost:3000/auth/reset-password", { token, password });
+            await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/reset-password`, { token, password });
             navigate("/");
         } catch (err) {
             setError(err.response?.data?.message || "Reset failed");

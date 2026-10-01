@@ -4,17 +4,29 @@ import api from "../api";
 import Navbar from "../components/Navbar";
 import { getRole } from "../utils/auth";
 
+function SkeletonCard() {
+    return (
+        <div className="bg-white border border-orange-100 rounded-2xl overflow-hidden flex flex-col">
+            <div className="h-44 skeleton" />
+            <div className="p-5 flex flex-col gap-3">
+                <div className="h-4 w-2/3 skeleton" />
+                <div className="h-3 w-1/2 skeleton" />
+                <div className="h-9 w-full skeleton mt-1" />
+            </div>
+        </div>
+    );
+}
+
 function Restaurant() {
     const navigate = useNavigate();
     const [restaurants, setRes] = useState([]);
+    const [loading, setLoading] = useState(true);
     const role = getRole();
 
     useEffect(() => {
-        const get = async () => {
-            const res = await api.get("/restaurants");
-            setRes(res.data.Data);
-        };
-        get();
+        api.get("/restaurants")
+            .then(res => setRes(res.data.Data))
+            .finally(() => setLoading(false));
     }, []);
 
     return (
@@ -26,21 +38,31 @@ function Restaurant() {
                     <p className="text-gray-400 text-sm mt-1">Browse and reserve your table</p>
                 </div>
 
-                {restaurants.length === 0 ? (
-                    <div className="text-center py-24 text-gray-300 text-sm">No restaurants available</div>
+                {loading ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+                    </div>
+                ) : restaurants.length === 0 ? (
+                    <div className="text-center py-24 animate-fadeIn">
+                        <p className="text-5xl mb-4">🍽</p>
+                        <p className="text-gray-400 text-sm">No restaurants available yet</p>
+                    </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         {restaurants.map((r, i) => (
-                            <div key={r.restaurant_id}
-                                className="bg-white border border-orange-100 rounded-2xl overflow-hidden hover:border-orange-300 hover:shadow-md hover:shadow-orange-100 transition-all duration-300 flex flex-col animate-fadeIn"
-                                style={{ animationDelay: `${i * 60}ms` }}>
+                            <div
+                                key={r.restaurant_id}
+                                className="bg-white border border-orange-100 rounded-2xl overflow-hidden hover:border-orange-300 hover:shadow-md hover:shadow-orange-100 hover:-translate-y-0.5 transition-all duration-300 flex flex-col animate-fadeIn"
+                                style={{ animationDelay: `${i * 60}ms` }}
+                            >
                                 <div className="h-44 bg-orange-50 overflow-hidden">
                                     {r.cover_img ? (
-                                        <img src={r.cover_img} alt={r.restaurant_name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                                        <img
+                                            src={r.cover_img} alt={r.restaurant_name}
+                                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                                        />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <span className="text-gray-300 text-sm">No image</span>
-                                        </div>
+                                        <div className="w-full h-full flex items-center justify-center text-4xl">🍴</div>
                                     )}
                                 </div>
                                 <div className="p-5 flex flex-col gap-3 flex-1">
@@ -48,15 +70,18 @@ function Restaurant() {
                                         <h2 className="text-gray-900 font-semibold text-base">{r.restaurant_name}</h2>
                                         <p className="text-gray-400 text-sm mt-0.5">{r.address}</p>
                                     </div>
-                                    <p className="text-gray-300 text-xs">{r.email}</p>
                                     {role === "owner" ? (
-                                        <button onClick={() => navigate(`/myrestaurants/${r.restaurant_id}/bookings`)}
-                                            className="mt-auto w-full bg-orange-50 hover:bg-orange-100 text-orange-600 text-sm font-medium py-2.5 rounded-xl transition-all duration-200 cursor-pointer border border-orange-200">
+                                        <button
+                                            onClick={() => navigate(`/myrestaurants/${r.restaurant_id}/bookings`)}
+                                            className="mt-auto w-full bg-orange-50 hover:bg-orange-100 text-orange-600 text-sm font-medium py-2.5 rounded-xl transition-all duration-200 cursor-pointer border border-orange-200 btn-press"
+                                        >
                                             View Bookings
                                         </button>
                                     ) : (
-                                        <button onClick={() => navigate(`/restaurant/${r.restaurant_id}`)}
-                                            className="mt-auto w-full bg-orange-500 hover:bg-orange-400 text-white text-sm font-medium py-2.5 rounded-xl transition-all duration-200 cursor-pointer">
+                                        <button
+                                            onClick={() => navigate(`/restaurant/${r.restaurant_id}`)}
+                                            className="mt-auto w-full bg-orange-500 hover:bg-orange-400 active:bg-orange-600 text-white text-sm font-medium py-2.5 rounded-xl transition-all duration-200 cursor-pointer btn-press"
+                                        >
                                             Reserve a Table
                                         </button>
                                     )}

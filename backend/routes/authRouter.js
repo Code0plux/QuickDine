@@ -1,11 +1,13 @@
-import express from 'express'
-import authcontroller from '../controllers/auth.js'
-import { authenticateUser } from '../middleware/authMiddleware.js'
-const router = express.Router()
+import express from 'express';
+import authcontroller from '../controllers/auth.js';
+import validate from '../middleware/validate.js';
+import { loginSchema, registerSchema, forgotPasswordSchema, resetPasswordSchema } from '../middleware/authSchemas.js';
 
-router.route('/login').post(authcontroller.login)
-router.route('/register').post(authcontroller.register)
-router.route('/forgot-password').post(authcontroller.forgotPassword)
-router.route('/reset-password').post(authcontroller.resetPassword)
+const router = express.Router();
+
+router.post('/login',           validate(loginSchema),          authcontroller.login);
+router.post('/register',        validate(registerSchema),       authcontroller.register);
+router.post('/forgot-password', validate(forgotPasswordSchema), authcontroller.forgotPassword);
+router.post('/reset-password',  validate(resetPasswordSchema),  authcontroller.resetPassword);
 
 export default router;

@@ -23,8 +23,8 @@ function AddRestaurant() {
     const uploadToCloudinary = async () => {
         const formData = new FormData();
         formData.append("file", image);
-        formData.append("upload_preset", "quickdine");
-        const res = await fetch("https://api.cloudinary.com/v1_1/do9yntyim/image/upload", { method: "POST", body: formData });
+        formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+        const res = await fetch(import.meta.env.VITE_CLOUDINARY_URL, { method: "POST", body: formData });
         const data = await res.json();
         return data.secure_url;
     };
