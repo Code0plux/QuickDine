@@ -60,7 +60,6 @@ function RestaurantBookings() {
                     <div className="flex flex-col gap-10">
                         {slots.map((slot) => (
                             <div key={slot}>
-                                {/* Time slot header */}
                                 <div className="flex items-center gap-3 mb-4">
                                     <span className="bg-orange-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-sm">
                                         {slot}
@@ -71,7 +70,7 @@ function RestaurantBookings() {
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {grouped[slot].map((b, i) => {
-                                        const isBooked = b.booking_status === "Booked";
+                                        const isBooked = b.booking_status === "confirm";
                                         return (
                                             <div
                                                 key={b.table_id}
