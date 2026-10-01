@@ -14,16 +14,14 @@ export const isRestaurantOwner = async (req,res,next)=>{
         return res.status(500).json({message:"Error from is restaurant owner middleware", Error:err})
     }
 }
-export const isOwner = async (req,res,next)=>{
-    try{
-        const userId = req.userId;
-        const [result] = await db.query(`select * from restaurant where owner_id = ?`,[userId])
-        if(result.length==0) return res.status(401).json({message:"Unauthorized user"})
+export const isOwner = async (req, res, next) => {
+    try {
+        const [rows] = await db.query(`select role from user where id = ?`, [req.userId]);
+        if (!rows.length || rows[0].role !== 'owner')
+            return res.status(403).json({ message: "Only restaurant owners can do this" });
         next();
-    }catch(err){
-        return res.status(401).json({Message:"error from isowner middleware",
-        Error:err
-        })
+    } catch (err) {
+        return res.status(500).json({ message: "Error from isOwner middleware", Error: err });
     }
 }
 
