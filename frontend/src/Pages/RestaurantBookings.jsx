@@ -94,6 +94,7 @@ function RestaurantBookings() {
                                                     <span>Capacity: <span className="text-gray-600 font-medium">{b.capacity}</span></span>
                                                     <span>Customer: <span className="text-gray-600 font-medium">{b.name || "—"}</span></span>
                                                     <span>Time: <span className="text-orange-500 font-medium">{b.booking_time || "—"}</span></span>
+                                                    <span>Phone: <span className="text-orange-500 font-medium">{b.phone || "—"}</span></span>
                                                 </div>
                                                 {isBooked && (
                                                     <div className="mt-1 h-1 w-full rounded-full bg-red-100">
