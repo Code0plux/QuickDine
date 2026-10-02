@@ -8,14 +8,24 @@ import restaurantRouter from './routes/restaurantRouter.js'
 import userRouter from './routes/userRouter.js'
 import cors from 'cors'
 const app = express();
-const globalRateLimit = rateLimit({
+export const globalRateLimit = rateLimit({
     windowMs: 15*60*1000,
     limit:150,
     standardHeaders:'draft-8',
     legacyHeaders:false,
     message:{
-        status:402,
+        status:429,
         error: 'Too many request,please try again'
+    }
+})
+export const loginRateLitmit = rateLimit({
+    windowMs:5*60*1000,
+    limit:10,
+    standardHeaders:'draft-8',
+    legacyHeaders:false,
+    message:{
+        status:429,
+        error: 'Too many login attempts, please try again later'
     }
 })
 app.use(globalRateLimit)
